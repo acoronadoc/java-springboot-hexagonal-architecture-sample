@@ -32,15 +32,15 @@ public class PostgresRepository implements EntityRepository {
         try {
             for ( int i=0; i<entityFields.length; i++ ) {
                 fields[i] = entityFields[i].getName();
-                fieldValues[i] = reg.getClass()
-                    .getMethod( "get"+entityFields[i].getName().substring(0,1).toUpperCase()+entityFields[i].getName().substring(1) )
-                    .invoke( reg );
-            }
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-            | NoSuchMethodException | SecurityException e) {
-            e.printStackTrace();
-            }
 
+                Field fieldElement = reg.getClass().getDeclaredField(fields[i]);
+                fieldElement.setAccessible(true);
+                fieldValues[i] =  fieldElement.get(reg);
+            }
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+        }
+        
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO ")
             .append( reg.getClass().getSimpleName() )
